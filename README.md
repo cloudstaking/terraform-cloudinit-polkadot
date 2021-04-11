@@ -3,11 +3,11 @@
 Cloud-init files to setup Kusama/Polkadot validators. Besides the validator itself it also:
 
 - Optionally pulls latest snapshot from [Polkashots](https://polkashots.io)
-- [Node exporter](https://github.com/prometheus/node_exporter) with HTTPs to pull node metrics from your monitoring systems. 
+- [node exporter](https://github.com/prometheus/node_exporter) with HTTPs to pull node metrics from your monitoring systems. 
 - Nginx as a reverse proxy for libp2p
 - Support for different deplotments methods: either using docker/docker-compose or deploying the binary itself in the host.
 
-This module used by [terraform-aws-polkadot](https://github.com/cloudstaking/terraform-aws-polkadot) [terraform-gcp-polkadot](https://github.com/cloudstaking/terraform-digitalocean-polkadot) [terraform-scaleway-polkadot](https://github.com/cloudstaking/terraform-scaleway-polkadot) and [terraform-digitalocean-polkadot](https://github.com/cloudstaking/terraform-digitalocean-polkadot)
+This module used by [terraform-aws-polkadot](https://github.com/cloudstaking/terraform-aws-polkadot), [terraform-gcp-polkadot](https://github.com/cloudstaking/terraform-digitalocean-polkadot), [terraform-scaleway-polkadot](https://github.com/cloudstaking/terraform-scaleway-polkadot) and [terraform-digitalocean-polkadot](https://github.com/cloudstaking/terraform-digitalocean-polkadot)
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
