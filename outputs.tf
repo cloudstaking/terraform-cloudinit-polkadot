@@ -1,5 +1,5 @@
 output "clout_init" {
-  description = "The generated clout-init file for the instance"
+  description = "Generated clout-init file to be consumed by the instance resource"
   value       = data.cloudinit_config.validator.rendered
 }
 
