@@ -57,7 +57,7 @@ No Modules.
 
 | Name | Description |
 |------|-------------|
-| clout\_init | The generated clout-init file for the instance |
+| clout\_init | Generated clout-init file to be consumed by the instance resource |
 | http\_password | Password to access private endpoints (e.g node\_exporter) |
 | http\_username | Username to access private endpoints (e.g node\_exporter) |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
