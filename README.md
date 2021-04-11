@@ -1,0 +1,63 @@
+# terraform-cloudinit-polkadot
+
+Cloud-init files to setup Kusama/Polkadot validators. Besides the validator itself it also:
+
+- Optionally pulls latest snapshot from [Polkashots](https://polkashots.io)
+- [Node exporter](https://github.com/prometheus/node_exporter) with HTTPs to pull node metrics from your monitoring systems. 
+- Nginx as a reverse proxy for libp2p
+- Support for different deplotments methods: either using docker/docker-compose or deploying the binary itself in the host.
+
+This module used by [terraform-aws-polkadot](https://github.com/cloudstaking/terraform-aws-polkadot) [terraform-gcp-polkadot](https://github.com/cloudstaking/terraform-digitalocean-polkadot) [terraform-scaleway-polkadot](https://github.com/cloudstaking/terraform-scaleway-polkadot) and [terraform-digitalocean-polkadot](https://github.com/cloudstaking/terraform-digitalocean-polkadot)
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| cloudinit | 2.2.0 |
+| random | 3.1.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| cloudinit | 2.2.0 |
+| github | n/a |
+| random | 3.1.0 |
+
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [cloudinit_config](https://registry.terraform.io/providers/hashicorp/cloudinit/2.2.0/docs/data-sources/config) |
+| [github_release](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/release) |
+| [random_password](https://registry.terraform.io/providers/hashicorp/random/3.1.0/docs/resources/password) |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| additional\_volume | Set this variable in order to create an additional volume (mounted in /home) | `bool` | n/a | yes |
+| application\_layer | How to desploy the application layer, using either docker or the host itself | `string` | `"host"` | no |
+| chain | Chain name: kusama or polkadot. Variable required to download the latest snapshot from polkashots.io | `string` | n/a | yes |
+| cloud\_provider | Some components (like additional volumes) are set up differently between cloud providers | `string` | n/a | yes |
+| enable\_polkashots | Pull latest Polkadot/Kusama (depending on chain variable) from polkashots.io | `bool` | `false` | no |
+| http\_password | Password to access endpoints (e.g node\_exporter) | `string` | `""` | no |
+| http\_username | Username to access endpoints (e.g node\_exporter) | `string` | `""` | no |
+| p2p\_port | P2P port for Polkadot service | `number` | `30333` | no |
+| polkadot\_additional\_common\_flags | Application layer - the content of this variable will be appended to the polkadot command arguments | `string` | `""` | no |
+| proxy\_port | nginx reverse-proxy port to expose Polkadot's libp2p port. Polkadot's libp2p port should not be exposed directly for security reasons (e.g DOS) | `number` | `80` | no |
+| public\_fqdn | Public domain for the validator. Useful to serve node\_exporter through HTTPs | `string` | `""` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| clout\_init | The generated clout-init file for the instance |
+| http\_password | Password to access private endpoints (e.g node\_exporter) |
+| http\_username | Username to access private endpoints (e.g node\_exporter) |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

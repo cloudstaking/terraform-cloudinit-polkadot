@@ -1,0 +1,11 @@
+#cloud-config
+
+fs_setup:
+  - label: srv
+    filesystem: 'ext4'
+    device: '/dev/sda'
+
+mounts:
+ - [ sda, /home ]
+
+merge_type: 'list(append)+dict(recurse_array)+str()'

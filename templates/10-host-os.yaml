@@ -1,0 +1,28 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+apt:
+  sources:
+    polkadot.list:
+      source: deb https://releases.parity.io/deb release main
+      keyid: 9D4B2B6EB8F97156D19669A9FF0812D491B96798
+      keyserver: hkps://keys.mailvelope.com
+
+packages:
+  - p7zip-full
+  - ntp
+  - parity-keyring
+  - polkadot
+
+ntp:
+  enabled: true
+
+runcmd:
+  - journalctl --vacuum-time=2d
+
+# http://cloudinit.readthedocs.io/en/latest/topics/merging.html
+# http://jen20.com/2015/10/04/cloudconfig-merging.html
+merge_type: 'list(append)+dict(recurse_array)+str()'
