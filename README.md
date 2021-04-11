@@ -25,10 +25,6 @@ This module used by [terraform-aws-polkadot](https://github.com/cloudstaking/ter
 | github | n/a |
 | random | 3.1.0 |
 
-## Modules
-
-No Modules.
-
 ## Resources
 
 | Name |
@@ -42,9 +38,9 @@ No Modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | additional\_volume | If additional volume is created (mainly from Scaleway and DigitalOcean), set this variable in order to set the volume up (mounted in /home) | `bool` | n/a | yes |
+| cloud\_provider | Some components (like additional volumes) are set up differently between cloud providers | `string` | n/a | yes |
 | application\_layer | You can deploy the Polkadot using docker containers or in the host itself (using the binary) | `string` | `"host"` | no |
 | chain | Chain name: kusama or polkadot. Variable required to download the latest snapshot from polkashots.io | `string` | `"kusama"` | no |
-| cloud\_provider | Some components (like additional volumes) are set up differently between cloud providers | `string` | n/a | yes |
 | enable\_polkashots | Pull latest Polkadot/Kusama (depending on chain variable) from polkashots.io | `bool` | `false` | no |
 | http\_password | Password to access endpoints (e.g node\_exporter) | `string` | `""` | no |
 | http\_username | Username to access endpoints (e.g node\_exporter) | `string` | `""` | no |
