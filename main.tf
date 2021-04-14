@@ -30,6 +30,17 @@ resource "random_password" "http_password" {
   override_special = "_%@"
 }
 
+# A bit ugly - why? Check https://github.com/hashicorp/terraform-provider-random/issues/102
+resource "null_resource" "http_password" {
+  triggers = {
+    orig = random_password.http_password.result
+    pw = base64encode(bcrypt(random_password.http_password.result))
+  }
+
+  lifecycle {
+    ignore_changes = [triggers["pw"]]
+  }
+}
 
 data "cloudinit_config" "validator" {
   gzip          = false
@@ -110,7 +121,7 @@ data "cloudinit_config" "validator" {
     content = templatefile("${path.module}/templates/70-node-exporter.yaml.tpl", {
       public_domain = var.public_fqdn
       http_username = local.http_username
-      http_password = base64encode(bcrypt(local.http_password))
+      http_password = null_resource.http_password.triggers.pw
     })
   }
 }
