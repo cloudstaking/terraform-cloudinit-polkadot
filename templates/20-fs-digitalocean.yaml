@@ -1,9 +1,11 @@
 #cloud-config
 
-runcmd:
-  - umount /dev/sda
-  - mkfs -t ext4 /dev/sda && mount /dev/sda /home
-  - echo "/dev/sda /home ext4 rw,discard,errors=remount-ro 0 1" >> /etc/fstab
+fs_setup:
+  - label: home
+    filesystem: 'ext4'
+    device: '/dev/sda'
+
+mounts:
+ - [ sda, /home ]
 
 merge_type: 'list(append)+dict(recurse_array)+str()'
-
