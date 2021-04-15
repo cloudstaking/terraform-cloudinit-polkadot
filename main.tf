@@ -34,7 +34,7 @@ resource "random_password" "http_password" {
 resource "null_resource" "http_password" {
   triggers = {
     orig = random_password.http_password.result
-    pw = base64encode(bcrypt(random_password.http_password.result))
+    pw   = base64encode(bcrypt(random_password.http_password.result))
   }
 
   lifecycle {
@@ -82,47 +82,35 @@ data "cloudinit_config" "validator" {
     }
   }
 
-  # This part is applied to generate the docker-compose file when application_layer is docker
-  dynamic "part" {
-    for_each = range(var.application_layer == "docker" ? 1 : 0)
-    content {
-      filename     = "60-generate-docker-compose.yaml"
-      content_type = "text/cloud-config"
-      content = templatefile("${path.module}/templates/60-docker-setup.yaml.tpl", {
-        chain                   = var.chain
-        enable_polkashots       = var.enable_polkashots
-        latest_version          = data.github_release.polkadot.release_tag
-        additional_common_flags = join(" ", local.polkadot_cli_args)
-        p2p_port                = var.p2p_port
-        proxy_port              = var.proxy_port
-        cloud_provider          = var.cloud_provider
-      })
-    }
+  part {
+    filename     = "60-setup.yaml"
+    content_type = "text/cloud-config"
+    content = templatefile("${path.module}/templates/60-${var.application_layer}-setup.yaml.tpl", {
+      chain                   = var.chain
+      enable_polkashots       = var.enable_polkashots
+      latest_version          = data.github_release.polkadot.release_tag
+      additional_common_flags = join(" ", local.polkadot_cli_args)
+      p2p_port                = var.p2p_port
+      proxy_port              = var.proxy_port
+      cloud_provider          = var.cloud_provider
+      public_domain           = var.public_fqdn
+      http_username           = local.http_username
+      http_password           = null_resource.http_password.triggers.pw
+    })
   }
 
-  # This part is applied to configure polkadot and nginx
+  # node exporter 
   dynamic "part" {
     for_each = range(var.application_layer == "host" ? 1 : 0)
     content {
-      filename     = "60-host-setup.yaml"
+      filename     = "70-node-exporter.yaml"
       content_type = "text/cloud-config"
-      content = templatefile("${path.module}/templates/60-host-setup.yaml.tpl", {
-        additional_common_flags = join(" ", local.polkadot_cli_args)
-        p2p_port                = var.p2p_port
-        proxy_port              = var.proxy_port
+      content = templatefile("${path.module}/templates/70-host-node-exporter.yaml.tpl", {
+        public_domain = var.public_fqdn
+        http_username = local.http_username
+        http_password = null_resource.http_password.triggers.pw
       })
     }
-  }
-
-  # node exporter
-  part {
-    filename     = "70-node-exporter.yaml"
-    content_type = "text/cloud-config"
-    content = templatefile("${path.module}/templates/70-node-exporter.yaml.tpl", {
-      public_domain = var.public_fqdn
-      http_username = local.http_username
-      http_password = null_resource.http_password.triggers.pw
-    })
   }
 }
 

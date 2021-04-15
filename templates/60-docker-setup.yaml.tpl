@@ -1,7 +1,7 @@
 #cloud-config
 
 write_files:
-- path: /home/polkadot/nginx.conf
+- path: /root/nginx.conf
   content: |
     user              nginx;
     worker_processes  auto;
@@ -26,7 +26,7 @@ write_files:
     }
   owner: root:root
   permissions: '0644'
-- path: /home/polkadot/docker-compose.yml
+- path: /root/docker-compose.yml
   content: |
     version: "3.3"
 
@@ -51,18 +51,65 @@ write_files:
         image: nginx:1.19-alpine
         ports:
           - ${proxy_port}:${proxy_port}
-          - 9100:9100
         volumes:
           - /home/polkadot/nginx.conf:/etc/nginx/nginx.conf
         networks:
           - default
+  
+      node-exporter:
+        image: prom/node-exporter:v1.0.1
+        container_name: node-exporter
+        volumes:
+          - /proc:/host/proc:ro
+          - /sys:/host/sys:ro
+          - /:/rootfs:ro
+        command:
+          - '--path.procfs=/host/proc'
+          - '--path.sysfs=/host/sys'
+          - --collector.filesystem.ignored-mount-points
+          - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+        restart: unless-stopped
+        networks:
+          - default
+
+      caddy:
+        image: caddy:2.1.1-alpine
+        container_name: caddy
+        restart: unless-stopped
+        ports:
+          - "9100:9100"
+        volumes:
+          - $PWD/Caddyfile:/etc/caddy/Caddyfile
+          - caddy_data:/data
+          - caddy_config:/config
+        networks:
+          - default
+
+    volumes:
+      caddy_data:
+      caddy_config:
 
     networks:
       default:
   owner: root:root
   permissions: '0644'
+- path: /root/Caddyfile
+  content: |
+    ${public_domain}:9100 {
+      reverse_proxy node-exporter:9100
+      basicauth {
+        ${http_username} ${http_password} 
+      }
+      log
+    }
+  owner: root:root
+  permissions: '0644'
 
 runcmd:
+  # The line below is because of the addional volume and cloudinit execution order
+  - mv /root/docker-compose.yml /root/nginx.conf /root/Caddyfile /home/polkadot
   - export PUBLIC_IP=$(curl 'https://api.ipify.org') && sed -i "s/PUBLIC_IP_ADDRESS/$PUBLIC_IP/g" /home/polkadot/docker-compose.yml
+  # Polkadot's UID inside Docker
+  - mkdir /home/polkadot/.local/ && chown 1000:1000 /home/polkadot/.local -R
 
 merge_type: 'list(append)+dict(recurse_array)+str()'
