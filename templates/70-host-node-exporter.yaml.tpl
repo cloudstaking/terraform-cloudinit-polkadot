@@ -82,6 +82,10 @@ write_files:
   permissions: '0644'
 - path: /etc/caddy/Caddyfile
   content: |
+    {
+      auto_https disable_redirects
+    }
+
     ${public_domain}:9100 {
       reverse_proxy 127.0.0.1:9200
       basicauth {
