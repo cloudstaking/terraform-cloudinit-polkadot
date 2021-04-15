@@ -5,7 +5,8 @@ packages:
 
 runcmd:
   - ufw allow OpenSSH
-  - ufw allow 'Nginx Full'
+  - ufw allow 80
+  - ufw allow 443
   - ufw allow 9100/tcp
   - ufw default deny incoming
   - ufw reload
