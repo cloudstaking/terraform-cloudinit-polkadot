@@ -49,6 +49,7 @@ write_files:
       nginx:
         container_name: nginx
         image: nginx:1.19-alpine
+        restart: unless-stopped
         ports:
           - ${proxy_port}:${proxy_port}
         volumes:
@@ -59,6 +60,7 @@ write_files:
       node-exporter:
         image: prom/node-exporter:v1.0.1
         container_name: node-exporter
+        restart: unless-stopped
         volumes:
           - /proc:/host/proc:ro
           - /sys:/host/sys:ro
@@ -68,7 +70,6 @@ write_files:
           - '--path.sysfs=/host/sys'
           - --collector.filesystem.ignored-mount-points
           - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
-        restart: unless-stopped
         networks:
           - default
 
