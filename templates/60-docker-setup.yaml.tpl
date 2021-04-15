@@ -78,6 +78,7 @@ write_files:
         restart: unless-stopped
         ports:
           - "9100:9100"
+          - "443:443"
         volumes:
           - $PWD/Caddyfile:/etc/caddy/Caddyfile
           - caddy_data:/data
