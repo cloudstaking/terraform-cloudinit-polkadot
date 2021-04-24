@@ -93,6 +93,14 @@ write_files:
       }
       log
     }
+
+    ${public_domain}:9616 {
+      reverse_proxy 127.0.0.1:9615
+      basicauth {
+        ${http_username} ${http_password} 
+      }
+      log
+    }
   owner: root:root
   permissions: '0644'
 
